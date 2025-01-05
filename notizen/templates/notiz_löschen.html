@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notiz löschen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #ff4d4d;
+            color: white;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #cc0000;
+        }
+        a {
+            text-decoration: none;
+            font-size: 16px;
+            color: #007BFF;
+            margin: 10px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Notiz löschen</h1>
+    <p>Möchten Sie die folgende Notiz wirklich löschen?</p>
+    <p><strong>{{ note.title }}</strong></p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Löschen</button>
+        <a href="{% url 'note_list' %}">Abbrechen</a>
+    </form>
+    <button onclick="window.location.href='{% url 'startseite' %}'">Zurück zur Startseite</button>
+</body>
+</html>

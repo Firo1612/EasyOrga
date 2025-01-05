@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrieren</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        form {
+            display: inline-block;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        button, a {
+            padding: 10px 20px;
+            font-size: 16px;
+            text-decoration: none;
+            border: none;
+            color: white;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+        button:hover, a:hover {
+            background-color: #45a049;
+        }
+        .login-btn {
+            background-color: #2196F3;
+        }
+        .login-btn:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Registrieren</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Registrieren</button>
+    </form>
+    <div>
+        <a href="{% url 'login' %}" class="login-btn">Bereits registriert? Login</a>
+        <a href="{% url 'startseite' %}">Zurück zur Startseite</a>
+    </div>
+</body>
+</html>

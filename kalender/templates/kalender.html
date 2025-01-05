@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang='de'>
+  <head>
+    <title>Kalender</title>
+    <meta charset='utf-8' />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/list@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/multimonth@6.1.15/index.global.min.js'></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .btn-startseite {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .btn-startseite:hover {
+            background-color: #0056b3;
+        }
+        #calendar {
+            margin-bottom: 40px;
+        }
+    </style>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          headerToolbar: {
+            start: 'dayGridMonth,timeGridWeek,timeGridDay,list',
+            center: 'title',
+            end: 'today prevYear,prev,next,nextYear'
+          },
+          events: '/api/events/',
+          locale: 'de',
+          firstDay: 1,
+          buttonText: {
+            today: 'Heute',
+            month: 'Monat',
+            week: 'Woche',
+            list: 'Liste',
+            day: 'Tag',
+          },
+          selectable: true,
+
+          select: function (info) {
+                    const title = prompt('Titel des Events:');
+                    if (title) {
+                        fetch('/api/events/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken'),
+                            },
+                            body: JSON.stringify({
+                                title: title,
+                                start: info.startStr,
+                                end: info.endStr,
+                                description: "",
+                            })
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Event erfolgreich gespeichert!');
+                                calendar.refetchEvents();
+                            } else {
+                                alert('Fehler beim Speichern des Events!');
+                            }
+                        });
+                    }
+          },
+
+          eventClick: function(info) {
+              $('#eventTitle').val(info.event.title);
+              $('#eventStart').val(info.event.start.toISOString().slice(0, 16)); // Format für datetime-local
+              $('#eventEnd').val(info.event.end ? info.event.end.toISOString().slice(0, 16) : '');
+
+              $('#eventModal').show();
+
+              $('#saveEvent').off('click').on('click', function() {
+                  $.ajax({
+                      url: `/api/events/${info.event.id}/`, // API-Endpoint für Update
+                      method: 'PUT',
+                      headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                      contentType: 'application/json',
+                      data: JSON.stringify({
+                          title: $('#eventTitle').val(),
+                          start: $('#eventStart').val(),
+                          end: $('#eventEnd').val()
+                      }),
+                      success: function() {
+                          calendar.refetchEvents(); // Kalender neu laden
+                          $('#eventModal').hide();
+                      }
+                  });
+              });
+
+              $('#deleteEvent').off('click').on('click', function() {
+                  $.ajax({
+                      url: `/api/events/${info.event.id}/`,
+                      method: 'DELETE',
+                      headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                      success: function() {
+                          calendar.refetchEvents();
+                          $('#eventModal').hide();
+                      }
+                  });
+              });
+          },
+        });
+
+        calendar.render();
+
+        function updateEvent(event) {
+          $.ajax({
+              url: 'api/events/' + event.id + '/',
+              method: 'PUT',
+              headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+              data: {
+                  start: event.start.toISOString(),
+                  end: event.end ? event.end.toISOString() : null
+              },
+              success: function () {
+                  alert('Event aktualisiert');
+              }
+          });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+      });
+    </script>
+  </head>
+  <body>
+
+
+
+    <div id="eventModal" style="display: none;">
+      <form id="eventForm">
+        <label for="eventTitle">Titel:</label>
+        <input type="text" id="eventTitle" name="title"><br><br>
+        <label for="eventStart">Startzeit:</label>
+        <input type="datetime-local" id="eventStart" name="start"><br><br>
+        <label for="eventEnd">Endzeit:</label>
+        <input type="datetime-local" id="eventEnd" name="end"><br><br>
+        <button type="button" id="saveEvent">Speichern</button>
+        <button type="button" id="deleteEvent">Löschen</button>
+      </form>
+    </div>
+
+    <div id='calendar'></div>
+
+     <a href="/" class="btn-startseite">
+        Zur Startseite
+    </a>
+  </body>
+</html>

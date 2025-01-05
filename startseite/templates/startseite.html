@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>EasyOrga - Startseite</title>
+    <style>
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header .button-group {
+            display: flex;
+        }
+        header .button-group a {
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: white;
+            color: #007BFF;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        header .button-group a:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .link-box {
+            display: inline-block;
+            margin: 20px;
+            padding: 10px;
+            border: 2px solid #007BFF;
+            border-radius: 10px;
+            text-align: center;
+            width: 150px;
+        }
+        .link-box a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        .link-box img {
+            width: 100px;
+            height: auto;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .login-status {
+            color: #ffffff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Willkommen bei EasyOrga</h1>
+    <div class="button-group">
+        {% if request.user.is_authenticated %}
+            <p class="login-status">Bereits angemeldet als {{ request.user.username }}</p>
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Registrieren</a>
+        {% endif %}
+
+    </div>
+</header>
+
+<div class="link-box">
+    <a href="/kalender/">Kalender</a>
+</div>
+<div class="link-box">
+    <a href="/notizen/">Notizen</a>
+</div>
+
+<footer>
+    <h2>Was ist EasyOrga?</h2>
+    <p>EasyOrga ist eine einfache Plattform, um deine Termine und Notizen an einem Ort zu verwalten.</p>
+    <p>Wähle oben eine Option, um loszulegen.</p>
+    <p>&copy; 2025 EasyOrga. Alle Rechte vorbehalten.</p>
+</footer>
+
+</body>
+</html>

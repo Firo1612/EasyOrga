@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notizen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Deine Notizen</h1>
+    <ul>
+        {% for note in notes %}
+        <li>
+            <a href="{% url 'note_detail' note.pk %}">{{ note.title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <p>
+        <a href="{% url 'create_note' %}">Neue Notiz erstellen</a>
+    </p>
+    <button onclick="window.location.href='{% url 'startseite' %}'">Zurück zur Startseite</button>
+</body>
+</html>
